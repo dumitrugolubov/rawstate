@@ -1,1 +1,1866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAWSTATE | Mobile App Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================
+           RAWSTATE - 2026 Design System
+           ======================================== */
 
+        :root {
+            /* Core Colors - 2026 Dark Mode */
+            --void: #050505;
+            --void-light: #0A0A0A;
+            --surface: #111111;
+            --surface-elevated: #1A1A1A;
+
+            /* 2026 Acid Accent Palette */
+            --acid-green: #CCFF00;
+            --acid-green-dim: #AADD00;
+            --digital-violet: #6E44FF;
+            --cyan-glint: #00F0FF;
+
+            /* Technical Grays */
+            --chrome: #F0F0F0;
+            --silver: #C0C0C0;
+            --steel: #888888;
+            --concrete: #444444;
+
+            /* Typography */
+            --font-display: 'Clash Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+            /* Spacing System */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 4rem;
+            --space-xl: 8rem;
+            --space-2xl: 16rem;
+
+            /* Transitions */
+            --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --transition-aggressive: cubic-bezier(0.96, 0, 0.04, 1);
+        }
+
+        /* ========================================
+           Reset & Base
+           ======================================== */
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--void);
+            color: var(--chrome);
+            font-family: var(--font-display);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: none;
+        }
+
+        img, video {
+            max-width: 100%;
+            display: block;
+        }
+
+        /* ========================================
+           Custom Cursor System - 2026
+           ======================================== */
+
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--acid-green);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s var(--transition-spring),
+                        height 0.3s var(--transition-spring),
+                        background-color 0.3s ease,
+                        border-color 0.3s ease;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 4px;
+            background: var(--acid-green);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10001;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor.active {
+            width: 60px;
+            height: 60px;
+            background: rgba(204, 255, 0, 0.1);
+            border-color: var(--acid-green);
+        }
+
+        .cursor.active .cursor-dot {
+            background: var(--acid-green);
+            box-shadow: 0 0 20px var(--acid-green), 0 0 40px var(--acid-green);
+        }
+
+        /* ========================================
+           Fluid Background - WebGL Simulation
+           ======================================== */
+
+        .fluid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .fluid-canvas {
+            width: 100%;
+            height: 100%;
+            opacity: 0.4;
+        }
+
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--acid-green) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--digital-violet) 0%, transparent 70%);
+            top: 50%;
+            right: -100px;
+            animation-delay: -7s;
+        }
+
+        .orb-3 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--cyan-glint) 0%, transparent 70%);
+            bottom: -150px;
+            left: 30%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(100px, -50px) scale(1.1); }
+            50% { transform: translate(-50px, 100px) scale(0.9); }
+            75% { transform: translate(-100px, -50px) scale(1.05); }
+        }
+
+        /* ========================================
+           Noise Overlay - Texture
+           ======================================== */
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* ========================================
+           Navigation - Floating Dock (2026)
+           ======================================== */
+
+        .nav-dock {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+        }
+
+        .nav-item {
+            position: relative;
+            padding: 12px 20px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--steel);
+            border-radius: 12px;
+            transition: all 0.3s var(--transition-smooth);
+        }
+
+        .nav-item:hover {
+            color: var(--chrome);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-item.active {
+            color: var(--acid-green);
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: var(--acid-green);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.3s var(--transition-spring);
+        }
+
+        .nav-item.active::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* ========================================
+           Typography System
+           ======================================== */
+
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .display-text {
+            font-size: clamp(3rem, 12vw, 10rem);
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 0.9;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+        }
+
+        .mono-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--steel);
+        }
+
+        /* ========================================
+           Magnetic Button - 2026 Style
+           ======================================== */
+
+        .magnetic-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 40px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--void);
+            background: var(--acid-green);
+            border: none;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.3s var(--transition-spring);
+        }
+
+        .magnetic-btn .btn-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .magnetic-btn .btn-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--acid-green-dim) 0%, var(--acid-green) 100%);
+            z-index: 1;
+        }
+
+        .magnetic-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .magnetic-btn .scramble-text {
+            display: inline-block;
+        }
+
+        /* Hover scramble effect */
+        .magnetic-btn:hover .scramble-text {
+            animation: scramble 0.3s steps(5) infinite;
+        }
+
+        @keyframes scramble {
+            0% { content: attr(data-text); }
+            20% { content: '#@$%!'; }
+            40% { content: '0P?/~+'; }
+            60% { content: 'X7@2M='; }
+            80% { content: 'Q*W9K!'; }
+            100% { content: attr(data-text); }
+        }
+
+        /* ========================================
+           Hero Section
+           ======================================== */
+
+        .hero {
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--space-lg);
+            position: relative;
+        }
+
+        .hero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-xl);
+        }
+
+        .studio-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border: 1px solid rgba(204, 255, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--acid-green);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(204, 255, 0, 0.7); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 10px rgba(204, 255, 0, 0); }
+        }
+
+        .studio-badge span {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--acid-green);
+        }
+
+        .hero-meta {
+            text-align: right;
+        }
+
+        .hero-meta .mono-label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .hero-year {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--chrome);
+        }
+
+        .hero-title {
+            position: relative;
+            margin-bottom: var(--space-lg);
+        }
+
+        .hero-title .line {
+            display: block;
+            overflow: hidden;
+        }
+
+        .hero-title .line span {
+            display: block;
+            transform: translateY(100%);
+            animation: slideUp 1s var(--transition-aggressive) forwards;
+        }
+
+        .hero-title .line:nth-child(2) span {
+            animation-delay: 0.15s;
+        }
+
+        @keyframes slideUp {
+            to { transform: translateY(0); }
+        }
+
+        .hero-title .highlight {
+            color: var(--acid-green);
+            position: relative;
+        }
+
+        .hero-description {
+            max-width: 600px;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .hero-description p {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: var(--steel);
+            animation: fadeIn 1s 0.5s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .hero-cta {
+            margin-top: var(--space-lg);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-md);
+        }
+
+        /* ========================================
+           Scroll Indicator
+           ======================================== */
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 100px;
+            left: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .scroll-indicator .line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--acid-green) 0%, transparent 100%);
+            animation: scrollLine 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollLine {
+            0%, 100% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0.5); opacity: 0.5; }
+        }
+
+        .scroll-indicator span {
+            writing-mode: vertical-rl;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--steel);
+        }
+
+        /* ========================================
+           Stats Bar - Marquee
+           ======================================== */
+
+        .stats-bar {
+            padding: var(--space-md) 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .stats-marquee {
+            display: flex;
+            animation: marquee 30s linear infinite;
+        }
+
+        .stats-marquee:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: 0 var(--space-lg);
+            white-space: nowrap;
+        }
+
+        .stat-item .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--chrome);
+        }
+
+        .stat-item .label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--steel);
+        }
+
+        .stat-item .separator {
+            width: 4px;
+            height: 4px;
+            background: var(--acid-green);
+            border-radius: 50%;
+        }
+
+        /* ========================================
+           Projects Section - Horizontal Scroll
+           ======================================== */
+
+        .projects-section {
+            padding: var(--space-2xl) 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .section-header .mono-label {
+            display: block;
+            margin-bottom: var(--space-sm);
+        }
+
+        .projects-scroll-container {
+            display: flex;
+            gap: var(--space-md);
+            overflow-x: auto;
+            padding: 0 var(--space-lg);
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .projects-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .project-card {
+            flex: 0 0 500px;
+            height: 600px;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            scroll-snap-align: start;
+            cursor: none;
+        }
+
+        .project-card.large {
+            flex: 0 0 700px;
+        }
+
+        .project-card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        .project-image {
+            width: 100%;
+            height: 70%;
+            object-fit: cover;
+            transition: transform 0.8s var(--transition-smooth);
+        }
+
+        .project-card:hover .project-image {
+            transform: scale(1.05);
+        }
+
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(5, 5, 5, 0.9) 0%, transparent 60%);
+        }
+
+        .project-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: var(--space-md);
+        }
+
+        .project-category {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--acid-green);
+            margin-bottom: var(--space-xs);
+        }
+
+        .project-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--chrome);
+            margin-bottom: var(--space-sm);
+        }
+
+        .project-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .project-tag {
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--steel);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+        }
+
+        /* Project placeholder backgrounds */
+        .project-card[data-project="1"] .project-card-inner {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .project-card[data-project="2"] .project-card-inner {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+        }
+
+        .project-card[data-project="3"] .project-card-inner {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+
+        .project-card[data-project="4"] .project-card-inner {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1f1f1f 100%);
+        }
+
+        /* Device mockups */
+        .device-mockup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 400px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .device-mockup::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        /* ========================================
+           Services Section - Grid Layout
+           ======================================== */
+
+        .services-section {
+            padding: var(--space-2xl) var(--space-lg);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .service-card {
+            padding: var(--space-lg);
+            background: var(--surface);
+            transition: all 0.4s var(--transition-smooth);
+        }
+
+        .service-card:hover {
+            background: var(--surface-elevated);
+        }
+
+        .service-card:nth-child(4),
+        .service-card:nth-child(5),
+        .service-card:nth-child(6) {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .service-number {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--acid-green);
+            margin-bottom: var(--space-sm);
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--chrome);
+            margin-bottom: var(--space-sm);
+        }
+
+        .service-description {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--steel);
+        }
+
+        /* ========================================
+           About Section
+           ======================================== */
+
+        .about-section {
+            padding: var(--space-2xl) var(--space-lg);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .about-content .mono-label {
+            display: block;
+            margin-bottom: var(--space-md);
+        }
+
+        .about-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: var(--space-md);
+        }
+
+        .about-title .highlight {
+            color: var(--acid-green);
+        }
+
+        .about-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--steel);
+            margin-bottom: var(--space-lg);
+        }
+
+        .about-image {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--surface);
+        }
+
+        .about-image-inner {
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%);
+        }
+
+        .about-image-placeholder {
+            font-family: var(--font-mono);
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--concrete);
+            opacity: 0.3;
+        }
+
+        /* ========================================
+           Contact Section - Terminal Modal Style
+           ======================================== */
+
+        .contact-section {
+            padding: var(--space-2xl) var(--space-lg);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .contact-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .contact-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: var(--space-md);
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot:nth-child(1) { background: #ff5f56; }
+        .terminal-dot:nth-child(2) { background: #ffbd2e; }
+        .terminal-dot:nth-child(3) { background: #27ca40; }
+
+        .terminal-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--steel);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-content {
+            padding: var(--space-xl);
+        }
+
+        .contact-cta {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .contact-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: var(--space-md);
+        }
+
+        .contact-title .highlight {
+            color: var(--acid-green);
+        }
+
+        .contact-subtitle {
+            font-size: 1.1rem;
+            color: var(--steel);
+            margin-bottom: var(--space-lg);
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--chrome);
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            transition: all 0.3s var(--transition-smooth);
+        }
+
+        .contact-link:hover {
+            color: var(--void);
+            background: var(--acid-green);
+            border-color: var(--acid-green);
+        }
+
+        .contact-link .arrow {
+            transition: transform 0.3s var(--transition-smooth);
+        }
+
+        .contact-link:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        /* Terminal content simulation */
+        .terminal-content {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: var(--steel);
+            padding: var(--space-md);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        .terminal-line {
+            margin-bottom: 8px;
+        }
+
+        .terminal-prompt {
+            color: var(--acid-green);
+            margin-right: 8px;
+        }
+
+        .terminal-command {
+            color: var(--chrome);
+        }
+
+        .terminal-output {
+            color: var(--steel);
+            padding-left: 24px;
+        }
+
+        .terminal-highlight {
+            color: var(--cyan-glint);
+        }
+
+        /* ========================================
+           Footer
+           ======================================== */
+
+        .footer {
+            padding: var(--space-xl) var(--space-lg);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .footer-tagline {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--steel);
+            margin-top: 8px;
+        }
+
+        .footer-meta {
+            display: flex;
+            gap: var(--space-lg);
+            text-align: right;
+        }
+
+        .footer-column .mono-label {
+            display: block;
+            margin-bottom: var(--space-xs);
+        }
+
+        .footer-link {
+            font-size: 0.9rem;
+            color: var(--chrome);
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--acid-green);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--space-lg);
+            padding-top: var(--space-md);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .copyright {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--steel);
+        }
+
+        .social-links {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .social-link {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--steel);
+            transition: color 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: var(--acid-green);
+        }
+
+        /* ========================================
+           Responsive Design - 2026 Mobile
+           ======================================== */
+
+        @media (max-width: 1024px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .service-card:nth-child(3),
+            .service-card:nth-child(5) {
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .about-section {
+                grid-template-columns: 1fr;
+            }
+
+            .project-card {
+                flex: 0 0 400px;
+            }
+
+            .project-card.large {
+                flex: 0 0 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --space-lg: 3rem;
+                --space-xl: 6rem;
+                --space-2xl: 10rem;
+            }
+
+            .hero {
+                padding: var(--space-md);
+            }
+
+            .hero-header {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+
+            .hero-meta {
+                text-align: left;
+            }
+
+            .hero-description {
+                text-align: left;
+                margin-left: 0;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .scroll-indicator {
+                display: none;
+            }
+
+            .nav-dock {
+                bottom: 20px;
+                padding: 6px;
+            }
+
+            .nav-item {
+                padding: 10px 14px;
+                font-size: 0.65rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .service-card {
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .project-card {
+                flex: 0 0 85vw;
+                height: 500px;
+            }
+
+            .project-card.large {
+                flex: 0 0 85vw;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: var(--space-md);
+                align-items: flex-start;
+            }
+
+            .footer-meta {
+                flex-direction: column;
+                gap: var(--space-sm);
+                text-align: left;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: var(--space-sm);
+                align-items: flex-start;
+            }
+
+            .cursor, .cursor-dot {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
+
+        /* ========================================
+           Utility Classes
+           ======================================== */
+
+        .text-gradient {
+            background: linear-gradient(135deg, var(--acid-green) 0%, var(--cyan-glint) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass {
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .reveal-text {
+            clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+            animation: reveal 1s var(--transition-aggressive) forwards;
+        }
+
+        @keyframes reveal {
+            to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+        }
+
+        /* ========================================
+           Animations - Scroll Reveal
+           ======================================== */
+
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s var(--transition-smooth);
+        }
+
+        .reveal-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Glitch effect for headers */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+        }
+
+        .glitch:hover::before {
+            animation: glitch-1 0.3s linear infinite;
+            color: var(--acid-green);
+            z-index: -1;
+        }
+
+        .glitch:hover::after {
+            animation: glitch-2 0.3s linear infinite;
+            color: var(--digital-violet);
+            z-index: -2;
+        }
+
+        @keyframes glitch-1 {
+            0%, 100% { transform: translate(0); opacity: 0.5; }
+            20% { transform: translate(-2px, 2px); opacity: 0.3; }
+            40% { transform: translate(2px, -2px); opacity: 0.4; }
+            60% { transform: translate(-2px, -2px); opacity: 0.6; }
+            80% { transform: translate(2px, 2px); opacity: 0.2; }
+        }
+
+        @keyframes glitch-2 {
+            0%, 100% { transform: translate(0); opacity: 0.5; }
+            20% { transform: translate(2px, -2px); opacity: 0.4; }
+            40% { transform: translate(-2px, 2px); opacity: 0.3; }
+            60% { transform: translate(2px, 2px); opacity: 0.5; }
+            80% { transform: translate(-2px, -2px); opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-dot"></div>
+
+    <!-- Noise Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Fluid Background -->
+    <div class="fluid-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Navigation Dock -->
+    <nav class="nav-dock">
+        <a href="#hero" class="nav-item active" data-section="hero">Home</a>
+        <a href="#projects" class="nav-item" data-section="projects">Work</a>
+        <a href="#services" class="nav-item" data-section="services">Services</a>
+        <a href="#about" class="nav-item" data-section="about">About</a>
+        <a href="#contact" class="nav-item" data-section="contact">Contact</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <header class="hero-header">
+            <div class="studio-badge">
+                <div class="badge-dot"></div>
+                <span>Studio Active</span>
+            </div>
+            <div class="hero-meta">
+                <span class="mono-label">Founded</span>
+                <span class="hero-year">2025</span>
+            </div>
+        </header>
+
+        <div class="hero-title">
+            <span class="line"><span class="display-text glitch" data-text="RAWSTATE">RAWSTATE</span></span>
+            <span class="line"><span class="display-text">DESIGN</span></span>
+            <span class="line"><span class="display-text"><span class="highlight">STUDIO</span></span></span>
+        </div>
+
+        <div class="hero-description">
+            <p>We craft digital experiences that define the future. Award-winning mobile applications for visionary brands. No compromises. Pure execution.</p>
+        </div>
+
+        <div class="hero-cta">
+            <button class="magnetic-btn" data-text="Start Project">
+                <span class="btn-bg"></span>
+                <span class="btn-text scramble-text" data-text="Start Project">Start Project</span>
+            </button>
+        </div>
+
+        <div class="scroll-indicator">
+            <div class="line"></div>
+            <span>Scroll</span>
+        </div>
+    </section>
+
+    <!-- Stats Marquee -->
+    <div class="stats-bar">
+        <div class="stats-marquee">
+            <div class="stat-item">
+                <span class="number">47</span>
+                <span class="label">Apps Launched</span>
+                <div class="separator"></div>
+            </div>
+            <div class="stat-item">
+                <span class="number">12</span>
+                <span class="label">Design Awards</span>
+                <div class="separator"></div>
+            </div>
+            <div class="stat-item">
+                <span class="number">2.4M</span>
+                <span class="label">Users Reached</span>
+                <div class="separator"></div>
+            </div>
+            <div class="stat-item">
+                <span class="number">98%</span>
+                <span class="label">Retention Rate</span>
+                <div class="separator"></div>
+            </div>
+            <div class="stat-item">
+                <span class="number">47</span>
+                <span class="label">Apps Launched</span>
+                <div class="separator"></div>
+            </div>
+            <div class="stat-item">
+                <span class="number">12</span>
+                <span class="label">Design Awards</span>
+                <div class="separator"></div>
+            </div>
+            <div class="stat-item">
+                <span class="number">2.4M</span>
+                <span class="label">Users Reached</span>
+                <div class="separator"></div>
+            </div>
+            <div class="stat-item">
+                <span class="number">98%</span>
+                <span class="label">Retention Rate</span>
+                <div class="separator"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects-section">
+        <div class="section-header reveal-on-scroll">
+            <div>
+                <span class="mono-label">Selected Work</span>
+                <h2 class="section-title">Featured<br>Projects</h2>
+            </div>
+        </div>
+
+        <div class="projects-scroll-container">
+            <article class="project-card large" data-project="1">
+                <div class="project-card-inner">
+                    <div class="device-mockup"></div>
+                    <div class="project-overlay"></div>
+                    <div class="project-content">
+                        <span class="project-category">Fintech</span>
+                        <h3 class="project-title">Nova Finance</h3>
+                        <div class="project-tags">
+                            <span class="project-tag">iOS</span>
+                            <span class="project-tag">Android</span>
+                            <span class="project-tag">React Native</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-project="2">
+                <div class="project-card-inner">
+                    <div class="device-mockup"></div>
+                    <div class="project-overlay"></div>
+                    <div class="project-content">
+                        <span class="project-category">Healthcare</span>
+                        <h3 class="project-title">Pulse Health</h3>
+                        <div class="project-tags">
+                            <span class="project-tag">iOS</span>
+                            <span class="project-tag">SwiftUI</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-project="3">
+                <div class="project-card-inner">
+                    <div class="device-mockup"></div>
+                    <div class="project-overlay"></div>
+                    <div class="project-content">
+                        <span class="project-category">E-Commerce</span>
+                        <h3 class="project-title">Momentum</h3>
+                        <div class="project-tags">
+                            <span class="project-tag">Flutter</span>
+                            <span class="project-tag">Cross-platform</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-project="4">
+                <div class="project-card-inner">
+                    <div class="device-mockup"></div>
+                    <div class="project-overlay"></div>
+                    <div class="project-content">
+                        <span class="project-category">Social</span>
+                        <h3 class="project-title">Echo</h3>
+                        <div class="project-tags">
+                            <span class="project-tag">iOS</span>
+                            <span class="project-tag">Android</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services-section">
+        <div class="section-header reveal-on-scroll">
+            <div>
+                <span class="mono-label">What We Do</span>
+                <h2 class="section-title">Our<br>Services</h2>
+            </div>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card reveal-on-scroll">
+                <span class="service-number">/ 01</span>
+                <h3 class="service-title">Mobile Design</h3>
+                <p class="service-description">Native and cross-platform UI/UX design with pixel-perfect attention to detail. We create interfaces that feel native on every device.</p>
+            </div>
+
+            <div class="service-card reveal-on-scroll">
+                <span class="service-number">/ 02</span>
+                <h3 class="service-title">App Development</h3>
+                <p class="service-description">Full-cycle development using Swift, Kotlin, React Native, and Flutter. Scalable architecture with modern best practices.</p>
+            </div>
+
+            <div class="service-card reveal-on-scroll">
+                <span class="service-number">/ 03</span>
+                <h3 class="service-title">Strategy & Consulting</h3>
+                <p class="service-description">Product strategy, market analysis, and technical consulting to help you make informed decisions about your mobile presence.</p>
+            </div>
+
+            <div class="service-card reveal-on-scroll">
+                <span class="service-number">/ 04</span>
+                <h3 class="service-title">Brand Identity</h3>
+                <p class="service-description">Comprehensive brand development for digital products. From visual identity to voice and tone guidelines.</p>
+            </div>
+
+            <div class="service-card reveal-on-scroll">
+                <span class="service-number">/ 05</span>
+                <h3 class="service-title">Prototyping</h3>
+                <p class="service-description">High-fidelity interactive prototypes that bring your vision to life before development begins. Test and iterate faster.</p>
+            </div>
+
+            <div class="service-card reveal-on-scroll">
+                <span class="service-number">/ 06</span>
+                <h3 class="service-title">Maintenance</h3>
+                <p class="service-description">Ongoing support, updates, and optimization. We ensure your app stays fast, secure, and compatible with new OS releases.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="about-content reveal-on-scroll">
+            <span class="mono-label">Our Story</span>
+            <h2 class="about-title">Building the<br><span class="highlight">future of</span><br>digital</h2>
+            <p class="about-description">
+                RAWSTATE was founded on a simple premise: mobile apps can be beautiful, functional, and profitable without compromise. We're a team of designers, developers, and strategists obsessed with craftsmanship.
+            </p>
+            <p class="about-description">
+                Every pixel, every animation, every line of code is intentional. We don't just build apps—we craft digital experiences that resonate with users and drive business results.
+            </p>
+        </div>
+
+        <div class="about-image reveal-on-scroll">
+            <div class="about-image-inner">
+                <span class="about-image-placeholder">RS</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="contact-container reveal-on-scroll">
+            <div class="contact-header">
+                <div class="terminal-dots">
+                    <div class="terminal-dot"></div>
+                    <div class="terminal-dot"></div>
+                    <div class="terminal-dot"></div>
+                </div>
+                <span class="terminal-title">rawstate@io</span>
+            </div>
+
+            <div class="contact-content">
+                <div class="contact-cta">
+                    <h2 class="contact-title">Let's build<br><span class="highlight">something real</span></h2>
+                    <p class="contact-subtitle">Ready to transform your vision into a exceptional mobile experience?</p>
+
+                    <div class="contact-links">
+                        <a href="#" class="contact-link">
+                            <span class="scramble-text" data-text="Start Project">Start Project</span>
+                            <span class="arrow">→</span>
+                        </a>
+                        <a href="#" class="contact-link">
+                            <span class="scramble-text" data-text="Book Call">Book Call</span>
+                            <span class="arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="terminal-content">
+                    <div class="terminal-line">
+                        <span class="terminal-prompt">➜</span>
+                        <span class="terminal-command">cd /inquiry</span>
+                    </div>
+                    <div class="terminal-line terminal-output">
+                        <span class="mono-label">Response Time:</span> <span class="terminal-highlight">~24 hours</span>
+                    </div>
+                    <div class="terminal-line terminal-output">
+                        <span class="mono-label">Email:</span> <span class="terminal-highlight">hello@rawstate.io</span>
+                    </div>
+                    <div class="terminal-line terminal-output">
+                        <span class="mono-label">Location:</span> <span class="terminal-highlight">San Francisco, CA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">RAWSTATE</div>
+                <p class="footer-tagline">Design. Development. Distinction.</p>
+            </div>
+
+            <div class="footer-meta">
+                <div class="footer-column">
+                    <span class="mono-label">Studio</span>
+                    <a href="#" class="footer-link">About</a>
+                    <a href="#" class="footer-link">Careers</a>
+                </div>
+                <div class="footer-column">
+                    <span class="mono-label">Work</span>
+                    <a href="#" class="footer-link">Projects</a>
+                    <a href="#" class="footer-link">Case Studies</a>
+                </div>
+                <div class="footer-column">
+                    <span class="mono-label">Connect</span>
+                    <a href="https://x.com/rawstateio" target="_blank" class="footer-link">X / Twitter</a>
+                    <a href="#" class="footer-link">LinkedIn</a>
+                    <a href="#" class="footer-link">Instagram</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span class="copyright">© 2025 RAWSTATE. All rights reserved.</span>
+            <div class="social-links">
+                <a href="https://x.com/rawstateio" target="_blank" class="social-link">X</a>
+                <a href="#" class="social-link">LINKEDIN</a>
+                <a href="#" class="social-link">DRIBBBLE</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ========================================
+        // RAWSTATE - 2026 Interactive Features
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // ========================================
+            // Custom Cursor System
+            // ========================================
+            const cursor = document.querySelector('.cursor');
+            const cursorDot = document.querySelector('.cursor-dot');
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+            let dotX = 0, dotY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function animateCursor() {
+                // Smooth cursor follow
+                cursorX += (mouseX - cursorX) * 0.15;
+                cursorY += (mouseY - cursorY) * 0.15;
+                dotX += (mouseX - dotX) * 0.3;
+                dotY += (mouseY - dotY) * 0.3;
+
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
+                cursorDot.style.left = dotX + 'px';
+                cursorDot.style.top = dotY + 'px';
+
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            // Cursor hover effects
+            const hoverElements = document.querySelectorAll('a, button, .project-card, .service-card');
+            hoverElements.forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+            });
+
+            // ========================================
+            // Magnetic Buttons
+            // ========================================
+            const magneticBtns = document.querySelectorAll('.magnetic-btn');
+
+            magneticBtns.forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+
+                    btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px) scale(1.05)`;
+                });
+
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.transform = 'translate(0, 0) scale(1)';
+                });
+            });
+
+            // ========================================
+            // Scroll Reveal Animation
+            // ========================================
+            const revealElements = document.querySelectorAll('.reveal-on-scroll');
+
+            const revealOnScroll = () => {
+                const windowHeight = window.innerHeight;
+
+                revealElements.forEach(el => {
+                    const elementTop = el.getBoundingClientRect().top;
+                    const revealPoint = 150;
+
+                    if (elementTop < windowHeight - revealPoint) {
+                        el.classList.add('visible');
+                    }
+                });
+            };
+
+            window.addEventListener('scroll', revealOnScroll);
+            revealOnScroll(); // Initial check
+
+            // ========================================
+            // Navigation Active State
+            // ========================================
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('section');
+
+            const updateActiveNav = () => {
+                const scrollY = window.scrollY;
+
+                sections.forEach(section => {
+                    const sectionHeight = section.offsetHeight;
+                    const sectionTop = section.offsetTop;
+                    const sectionId = section.getAttribute('id');
+
+                    if (scrollY >= sectionTop - 200 && scrollY < sectionTop + sectionHeight - 200) {
+                        navItems.forEach(item => {
+                            item.classList.remove('active');
+                            if (item.dataset.section === sectionId) {
+                                item.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            };
+
+            window.addEventListener('scroll', updateActiveNav);
+
+            // ========================================
+            // Smooth Scroll for Navigation
+            // ========================================
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+
+                    if (targetSection) {
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // ========================================
+            // Text Scramble Effect
+            // ========================================
+            const scrambleElements = document.querySelectorAll('.scramble-text');
+
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+            scrambleElements.forEach(el => {
+                const originalText = el.dataset.text;
+
+                el.addEventListener('mouseenter', () => {
+                    let iteration = 0;
+                    const interval = setInterval(() => {
+                        el.textContent = originalText
+                            .split('')
+                            .map((char, index) => {
+                                if (index < iteration) {
+                                    return originalText[index];
+                                }
+                                return chars[Math.floor(Math.random() * chars.length)];
+                            })
+                            .join('');
+
+                        if (iteration >= originalText.length) {
+                            clearInterval(interval);
+                        }
+
+                        iteration += 1 / 3;
+                    }, 30);
+                });
+
+                el.addEventListener('mouseleave', () => {
+                    el.textContent = originalText;
+                });
+            });
+
+            // ========================================
+            // Gradient Orb Parallax
+            // ========================================
+            const orbs = document.querySelectorAll('.gradient-orb');
+
+            window.addEventListener('scroll', () => {
+                const scrolled = window.scrollY;
+
+                orbs.forEach((orb, index) => {
+                    const speed = 0.1 + (index * 0.05);
+                    orb.style.transform = `translateY(${scrolled * speed}px)`;
+                });
+            });
+
+            // ========================================
+            // Project Card Tilt Effect
+            // ========================================
+            const projectCards = document.querySelectorAll('.project-card');
+
+            projectCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+
+                    const rotateX = (y - centerY) / 20;
+                    const rotateY = (centerX - x) / 20;
+
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+                });
+            });
+
+            // ========================================
+            // Keyboard Navigation Support
+            // ========================================
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    document.body.classList.add('keyboard-nav');
+                    cursor.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('mousedown', () => {
+                document.body.classList.remove('keyboard-nav');
+                if (window.innerWidth > 768) {
+                    cursor.style.display = 'block';
+                }
+            });
+
+            // ========================================
+            // Reduce Motion for Accessibility
+            // ========================================
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+            if (prefersReducedMotion.matches) {
+                document.documentElement.style.setProperty('--transition-smooth', '0s');
+                document.documentElement.style.setProperty('--transition-spring', '0s');
+                document.documentElement.style.setProperty('--transition-aggressive', '0s');
+            }
+
+            // ========================================
+            // Mobile Detection
+            // ========================================
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                cursor.style.display = 'none';
+                cursorDot.style.display = 'none';
+            }
+
+            // ========================================
+            // Console Welcome Message
+            // ========================================
+            console.log('%c RAWSTATE ', 'background: #CCFF00; color: #050505; font-size: 24px; font-weight: bold; padding: 10px 20px;');
+            console.log('%c Design. Development. Distinction. ', 'color: #CCFF00; font-size: 14px;');
+        });
+    </script>
+</body>
+</html>
